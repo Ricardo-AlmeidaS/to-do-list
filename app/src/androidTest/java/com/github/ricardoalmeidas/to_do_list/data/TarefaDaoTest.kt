@@ -63,4 +63,18 @@ class TarefaDaoTest {
 
         assertTrue(dao.listarTodas().first().isEmpty())
     }
+
+    @Test
+    fun tarefasComPrazoVemAntesDasSemPrazoEOrdenadasPorProximidade() = runTest {
+        val agora = System.currentTimeMillis()
+        dao.inserir(Tarefa(titulo = "Sem prazo", descricao = ""))
+        dao.inserir(Tarefa(titulo = "Prazo distante", descricao = "", dataHora = agora + 100_000))
+        dao.inserir(Tarefa(titulo = "Prazo proximo", descricao = "", dataHora = agora + 10_000))
+
+        val tarefas = dao.listarTodas().first()
+
+        assertEquals("Prazo proximo", tarefas[0].titulo)
+        assertEquals("Prazo distante", tarefas[1].titulo)
+        assertEquals("Sem prazo", tarefas[2].titulo)
+    }
 }

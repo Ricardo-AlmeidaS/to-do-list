@@ -10,7 +10,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TarefaDao {
 
-    @Query("SELECT * FROM tarefas ORDER BY dataCriacao DESC")
+    // Tarefas com prazo vem primeiro, da mais proxima para a mais distante.
+    // As que nao tem prazo ficam no fim, da mais recente para a mais antiga.
+    @Query(
+        """
+        SELECT * FROM tarefas
+        ORDER BY dataHora IS NULL, dataHora ASC, dataCriacao DESC
+        """
+    )
     fun listarTodas(): Flow<List<Tarefa>>
 
     @Insert
