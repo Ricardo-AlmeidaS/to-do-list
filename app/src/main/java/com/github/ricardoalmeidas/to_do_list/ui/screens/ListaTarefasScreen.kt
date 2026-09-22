@@ -81,7 +81,6 @@ fun ListaTarefasContent(
     onConfirmarExclusao: () -> Unit = {},
     onCancelarExclusao: () -> Unit = {}
 ) {
-    // O dialogo aparece por cima da propria lista, sem abrir uma tela nova.
     if (tarefaParaExcluir != null) {
         ConfirmarExclusaoDialog(
             tarefa = tarefaParaExcluir,
