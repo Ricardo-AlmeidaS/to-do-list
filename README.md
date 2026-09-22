@@ -10,7 +10,7 @@ no próprio aparelho com o Room, então a lista continua lá depois de fechar o 
 - Listar todas as tarefas cadastradas
 - Editar uma tarefa já existente (basta tocar no card)
 - Marcar e desmarcar uma tarefa como concluída
-- Excluir uma tarefa
+- Excluir uma tarefa, com um diálogo pedindo confirmação antes
 - Navegar entre a tela de lista e a tela de formulário
 
 ## Tecnologias
@@ -74,6 +74,11 @@ Guarda o estado da tela seguindo o padrão MVVM.
 - Transforma o `Flow` do repositório em `StateFlow` com `stateIn`, usando
   `SharingStarted.WhileSubscribed(5_000)`. Assim o fluxo fica ativo por mais 5 segundos
   depois que a tela para de observar, e uma rotação de tela não força tudo a recomeçar.
+- Guarda em `tarefaParaExcluir: StateFlow<Tarefa?>` a tarefa que está esperando
+  confirmação de exclusão. `solicitarExclusao(tarefa)` abre o diálogo,
+  `cancelarExclusao()` fecha sem mexer na lista e `confirmarExclusao()` fecha e chama
+  `deletar` só com a tarefa guardada. Por ficar no ViewModel, o diálogo sobrevive a uma
+  rotação de tela.
 - As ações `inserir`, `atualizar` e `deletar` rodam dentro do `viewModelScope`, então são
   canceladas sozinhas se o ViewModel for destruído.
 - O `companion object` tem uma `factory` que monta o `TarefaRepository` a partir do
@@ -87,7 +92,10 @@ Guarda o estado da tela seguindo o padrão MVVM.
 - Mostra as tarefas em uma `LazyColumn`, cada uma dentro de um `Card` com checkbox,
   título, descrição e botão de excluir.
 - Nenhuma ação altera o estado direto na tela. O checkbox chama `viewModel.atualizar(...)`,
-  a lixeira chama `viewModel.deletar(...)`, e o clique no card ou no botão "+" só navega.
+  a lixeira chama `viewModel.solicitarExclusao(...)`, e o clique no card ou no botão "+" só navega.
+- Quando existe uma tarefa para excluir, a tela mostra um `AlertDialog` do Material 3 por
+  cima da lista (sem abrir outra tela) com o título da tarefa e os botões **Cancelar** e
+  **Excluir**. As evidências do fluxo estão em [EVIDENCIAS_EXCLUSAO.md](EVIDENCIAS_EXCLUSAO.md).
 - A interface em si fica em `ListaTarefasContent`, que recebe apenas dados e callbacks.
   Isso deixa o `@Preview` funcionar sem precisar de um ViewModel.
 
